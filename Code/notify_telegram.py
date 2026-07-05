@@ -1,11 +1,12 @@
+import os
 from telegram import Bot
 
 # ===============================
 # TELEGRAM CONFIG
 # ===============================
-BOT_TOKEN = "8187151276:AAGHoM95Mu20ppF4vokSWYx0xgrKaJr_RC0"
-CHAT_ID = 8510772668  # integer, no quotes
 
+BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
+CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
 bot = Bot(token=BOT_TOKEN)
 
 def send_telegram(message):
