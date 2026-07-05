@@ -46,3 +46,6 @@ Python
 BOT_TOKEN = "YOUR_TELEGRAM_BOT_TOKEN"
 
 CHAT_ID = YOUR_CHAT_ID_NUMERIC
+
+https://github.com/user-attachments/assets/7e188455-11bd-40b4-adf6-9ae336b5dcc9
+
