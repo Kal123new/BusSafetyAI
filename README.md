@@ -10,7 +10,7 @@ A school-bus dashboard with camera-based person detection, live location, studen
 
 The desktop browser build runs the custom model locally using WebGPU or WebAssembly. Camera images stay on the visitor's computer. An isolated public sample includes fictional students and saves only in that browser. Shared trips, administration, replacement buses, and guardian records require account-token sign-in to the configured backend.
 
-The free-hosting configuration uses Vercel Hobby for a personal, non-commercial project and Neon Free for persistent records, within their usage limits. It does not require the developer's laptop to stay on. **Live dashboard: https://bus-safety-ai.vercel.app/** Open the link and choose “Open sample dashboard” to try the fictional sample, or sign in for shared records. The earlier Hugging Face deployment is paused and is not the browser version.
+The free-hosting configuration uses Vercel Hobby for a personal, non-commercial project and Neon Free for persistent records, within their usage limits. \**Live dashboard: https://bus-safety-ai.vercel.app/** Open the link and choose “Open sample dashboard” to try the fictional sample, or sign in for shared records. The earlier Hugging Face deployment is paused and is not the browser version.
 
 The `Browser dashboard checks` workflow verifies the build, browser model execution, public sample rendering, small-screen guard, and trip workflow tests. It does not certify model accuracy or performance on every computer. See the [hosting guide](docs/BROWSER_HOSTING.md).
 
