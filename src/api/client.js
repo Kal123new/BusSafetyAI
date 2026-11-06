@@ -1,4 +1,5 @@
 import { browserInference, predictBrowserFrame } from '../inference/browser.js';
+import { inSample, sampleApi } from './sample.js';
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
   || (import.meta.env.DEV ? "http://127.0.0.1:8000" : "");
 let accessToken = "";
@@ -6,6 +7,7 @@ export const setAccessToken = value => { accessToken = value; };
 const authHeaders = () => accessToken ? { Authorization: `Bearer ${accessToken}` } : {};
 
 export async function requestApi(path, options = {}) {
+  if (inSample()) return sampleApi(path, options);
   const response = await fetch(`${API_BASE_URL}${path}`, {
     ...options, signal: options.signal ? AbortSignal.any([options.signal, AbortSignal.timeout(15000)]) : AbortSignal.timeout(15000),
     headers: { Accept: "application/json", ...authHeaders(), ...(options.body ? { "Content-Type": "application/json" } : {}), ...options.headers }
@@ -34,6 +36,7 @@ export function saveTripAction(id, action, body, key) {
 }
 
 export async function getBackendHealth() {
+  if (inSample()) return { backend_online: true, database_online: true, model_loaded: false, mode: 'sample' };
   const response = await fetch(`${API_BASE_URL}/health`, {
     method: "GET",
     signal: AbortSignal.timeout(10000),

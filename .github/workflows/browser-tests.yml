@@ -1,0 +1,28 @@
+name: Browser dashboard checks
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, codex/browser-dashboard]
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -r requirements.txt pytest
+      - run: python -m pytest backend/tests/test_scheduling.py backend/tests/test_replacements.py backend/tests/test_service_edges.py
+      - run: npm ci
+      - run: node --test tests/browser-geometry.test.mjs
+      - run: node scripts/prepare-browser-assets.mjs
+      - run: VITE_BROWSER_INFERENCE=true npm run build
+      - run: npm install --no-save --package-lock=false playwright@1.56.1
+      - run: npx playwright install --with-deps chromium
+      - run: node tests/browser-smoke.mjs

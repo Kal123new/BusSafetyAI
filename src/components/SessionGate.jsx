@@ -3,6 +3,8 @@ import { LogOut, Settings, LayoutDashboard, LogIn } from 'lucide-react';
 import { getBackendHealth, requestApi, setAccessToken } from '../api/client.js';
 import { GuardianInbox } from './GuardianInbox.jsx';
 import { Administration } from './Administration.jsx';
+import { inSample, selectSample, resetSample } from '../api/sample.js';
+import { browserInference } from '../inference/browser.js';
 
 const Session = createContext(null);
 export const useSession = () => useContext(Session);
@@ -24,18 +26,21 @@ export function SessionGate({ children }) {
   }
   useEffect(() => { connect(); }, []);
   async function authenticate(e) {
-    e.preventDefault(); setAccessToken(new FormData(e.currentTarget).get('token').trim());
+    e.preventDefault(); selectSample(false); setAccessToken(new FormData(e.currentTarget).get('token').trim());
     await connect(); setLogin(false);
   }
-  const signOut = () => { setAccessToken(''); setActor(null); setLogin(true); setView('dashboard'); };
+  const signOut = () => { selectSample(false); setAccessToken(''); setActor(null); setLogin(true); setView('dashboard'); };
   if (loading) return <main className="session-screen"><h1>SafeSense</h1><p>Connecting...</p></main>;
   if (!actor || login) return <main className="session-screen"><h1>SafeSense</h1>
+    <p>Computers / large screens only. Use current desktop Chrome or Edge.</p>
+    {browserInference && <><button onClick={() => { selectSample(true); setAccessToken(''); setLogin(false); connect(); }}>Open sample dashboard</button><p>Fictional students. Saved on this browser only; no access to real trip records.</p></>}
     <form onSubmit={authenticate}><label>Access token<input name="token" type="password" autoComplete="off" required /></label><button><LogIn size={18} />Sign in</button></form>
     {error && <p role="alert">{error}</p>}
     {mode === 'demo' && <button onClick={() => { setAccessToken(''); setLogin(false); connect(); }}>Return to local demo</button>}
     <button onClick={connect}>Reconnect</button>
   </main>;
   return <Session.Provider value={actor}><nav className="app-nav" aria-label="Application">
+    {mode === 'sample' && <><span>Public sample · fictional data · this browser only</span><button onClick={() => { if (window.confirm('Reset your fictional sample trip?')) {resetSample();window.location.reload();} }}>Reset sample</button></>}
     <strong>SafeSense</strong><span>{actor.role === 'admin' && mode === 'demo' && actor.id === 'local-demo' ? 'Local demo administrator' : actor.role}</span>
     {actor.role !== 'guardian' && <button onClick={() => setView('dashboard')}><LayoutDashboard size={18} />Dashboard</button>}
     {actor.role === 'admin' && <button onClick={() => setView('admin')}><Settings size={18} />Administration</button>}

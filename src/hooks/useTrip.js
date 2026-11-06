@@ -33,7 +33,7 @@ export function useTrip() {
     } finally { if (ticket === revision.current) setLoading(false); }
   }, []);
   useEffect(() => {
-    refresh(); const timer = setInterval(refresh, 10000);
+    refresh(); const timer = setInterval(() => { if (!document.hidden) refresh(); }, 30000);
     return () => { clearInterval(timer); revision.current++; };
   }, [refresh]);
   function selectTrip(id) {

@@ -39,8 +39,9 @@ export default function App() {
       try { const data = await getBackendHealth(); if (active) setHealth({ ...data, online: true }); }
       catch { if (active) setHealth({ online: false, model_loaded: false }); }
     };
-    check(); const timer = setInterval(() => { check(); setClock(new Date()); }, 5000);
-    return () => { active = false; clearInterval(timer); };
+    check(); const timer = setInterval(() => { if (!document.hidden) check(); }, 30000);
+    const clockTimer = setInterval(() => setClock(new Date()), 1000);
+    return () => { active = false; clearInterval(timer); clearInterval(clockTimer); };
   }, []);
 
   const students = (trip?.students || []).map(s => ({ ...s, id: s.student_id,
@@ -55,7 +56,7 @@ export default function App() {
 
   return <div className="page-shell"><div className="dashboard-frame connected-dashboard">
     <header className="main-header">
-      <div className="route-block"><Bus size={22} /><div><strong>{trip?.trip_code || "No trip selected"} / Bus {trip?.bus_code || "-"}</strong><span>{health.mode === "demo" ? "Local demo - fictional students" : "SafeSense"}</span></div></div>
+      <div className="route-block"><Bus size={22} /><div><strong>{trip?.trip_code || "No trip selected"} / Bus {trip?.bus_code || "-"}</strong><span>{['demo','sample'].includes(health.mode) ? "Sample - fictional students" : "SafeSense"}</span></div></div>
       <div className="header-metrics">
         <TopMetric icon={Users} value={counts.boarded} sublabel={`/ ${counts.total}`} label="On bus" tone="student-count" />
         <TopMetric icon={Clock3} value={clock.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} label="Current time" />
