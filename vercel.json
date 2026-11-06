@@ -1,0 +1,17 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "vite",
+  "buildCommand": "node scripts/prepare-browser-assets.mjs && VITE_BROWSER_INFERENCE=true npm run build",
+  "outputDirectory": "dist",
+  "functions": {
+    "api/index.py": {
+      "maxDuration": 60,
+      "excludeFiles": "{models/**,public/**,node_modules/**,.git/**,backend/tests/**,Code/**,yolov8n.pt}"
+    }
+  },
+  "rewrites": [
+    { "source": "/api/v1/:path*", "destination": "/api/index.py" },
+    { "source": "/health", "destination": "/api/index.py" },
+    { "source": "/ready", "destination": "/api/index.py" }
+  ]
+}

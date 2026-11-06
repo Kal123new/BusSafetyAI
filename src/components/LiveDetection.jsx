@@ -3,6 +3,7 @@ import { Camera } from "lucide-react";
 import { predictFrame } from "../api/client.js";
 import { StatusPill } from "./StatusPill.jsx";
 import { PanelExpandButton } from './PanelExpandButton.jsx';
+import { browserInference, loadBrowserModel } from '../inference/browser.js';
 
 function normalizeDetection(detection) {
   return {
@@ -41,9 +42,20 @@ function isBlankFrame(context, width, height) {
 }
 
 export function LiveDetection({ backendOnline, modelLoaded, onCameraStatusChange, onDetections, onObservation = () => {}, expanded, onToggleExpand }) {
+  const [browserReady, setBrowserReady] = useState(false);
+  const [browserError, setBrowserError] = useState('');
+  const [executionProvider, setExecutionProvider] = useState('');
+  if (browserInference) { backendOnline = true; modelLoaded = browserReady; }
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const [cameraEnabled, setCameraEnabled] = useState(false);
+  useEffect(() => {
+    if (!browserInference || !cameraEnabled) return;
+    let active = true; setBrowserError('');
+    loadBrowserModel().then(result => { if (active) { setBrowserReady(true); setExecutionProvider(result.provider); } })
+      .catch(error => { if (active) { setBrowserReady(false); setBrowserError(error.message); } });
+    return () => { active = false; };
+  }, [cameraEnabled]);
   const [facingMode, setFacingMode] = useState("user");
   const [cameraState, setCameraState] = useState("off");
   const [cameraError, setCameraError] = useState("");
@@ -256,7 +268,9 @@ export function LiveDetection({ backendOnline, modelLoaded, onCameraStatusChange
           <option value="user">Front camera</option><option value="environment">Rear camera</option>
         </select></label>
         <button onClick={() => setCameraEnabled(value => !value)}>{cameraEnabled ? 'Stop camera' : 'Enable camera'}</button>
-        <p>When enabled, this device sends camera images to the SafeSense server for detection. Images are not retained as recordings. Camera stops when you leave this tab.</p>
+        <p>{browserInference ? "Detection runs on this computer. Camera images stay on this device. The first use downloads the model. Camera stops when you leave this tab." : "When enabled, this device sends camera images to the SafeSense server for detection. Images are not retained as recordings. Camera stops when you leave this tab."}</p>
+        {browserInference && cameraEnabled && !browserReady && <p role="status">{browserError || 'Loading the browser model… This can take a minute on first use.'}</p>}
+        {browserReady && <p>Running locally with {executionProvider}</p>}
       </div>
 
       <div className="camera-shell">

@@ -24,7 +24,7 @@ from .scheduling import router as scheduling_router, start_scheduler
 from .replacements import router as replacements_router
 
 
-def create_app(settings=None):
+def create_app(settings=None, *, background_scheduler=True):
     settings = settings or Settings.from_env()
     engine = make_engine(settings.database_url)
     inference = Inference(settings)
@@ -34,7 +34,7 @@ def create_app(settings=None):
         inference.load()
         if settings.require_model and inference.model is None:
             raise RuntimeError(inference.message)
-        scheduler = start_scheduler(app.state.sessions) if settings.mode == 'production' else None
+        scheduler = start_scheduler(app.state.sessions) if settings.mode == 'production' and background_scheduler else None
         try:
             yield
         finally:

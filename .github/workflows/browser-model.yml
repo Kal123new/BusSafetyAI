@@ -1,0 +1,30 @@
+name: Export browser model
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - scripts/export-browser-model.py
+      - .github/workflows/browser-model.yml
+permissions:
+  contents: write
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install torch==2.8.0 torchvision==0.23.0 --index-url https://download.pytorch.org/whl/cpu
+      - run: pip install ultralytics==8.4.127 onnx==1.19.1 onnxruntime==1.23.2
+      - run: python scripts/export-browser-model.py
+      - name: Publish validated model assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view browser-model-v1 >/dev/null 2>&1; then
+            echo 'Release already exists; use a new version for a changed model.'
+          else
+            gh release create browser-model-v1 browser-model/person.onnx browser-model/manifest.json --title 'Browser model v1 — custom YOLO26s' --notes 'ONNX export of the existing custom checkpoint for local browser inference. See manifest for export checks. Desktop performance and dataset accuracy are separate checks.'
+          fi

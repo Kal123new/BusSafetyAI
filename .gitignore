@@ -15,3 +15,7 @@ data/
 backups/
 runs/
 .DS_Store
+public/models/
+public/ort/
+browser-model/
+models/*.onnx

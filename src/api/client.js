@@ -1,3 +1,4 @@
+import { browserInference, predictBrowserFrame } from '../inference/browser.js';
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
   || (import.meta.env.DEV ? "http://127.0.0.1:8000" : "");
 let accessToken = "";
@@ -47,6 +48,7 @@ export async function getBackendHealth() {
 }
 
 export async function predictFrame(frameBlob, capturedAt = Date.now() / 1000, signal) {
+  if (browserInference) return predictBrowserFrame(frameBlob, capturedAt, signal);
   const body = new FormData();
   body.append("file", frameBlob, "frame.jpg");
   body.append("captured_at", String(capturedAt));
