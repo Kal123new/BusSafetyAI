@@ -1,16 +1,22 @@
 # SafeSense — BusSafetyAI
 
-> **Compatibility: computers / large screens only.** Use a desktop or laptop with a modern Chrome or Edge browser and a window at least 1024 CSS pixels wide. Phones and tablets are not supported. Browser-based detection is being implemented; its performance depends on the computer's hardware.
+> **Compatibility: computers / large screens only.** Use a desktop or laptop with a modern Chrome or Edge browser and a window at least 1024 CSS pixels wide. Phones and tablets are not supported. Detection performance depends on the computer's hardware.
 
 A school-bus dashboard with camera-based person detection, live location, student attendance, trip management, and post-trip inspection workflows. The current application uses React, FastAPI, and a custom YOLO26s model.
 
-[Hosted dashboard](https://kal123new-bussafetyai.hf.space/) · [Hugging Face Space](https://huggingface.co/spaces/Kal123new/BusSafetyAI) · [Model details](models/MODEL_CARD.md)
+**[Open the dashboard](https://bus-safety-ai.vercel.app/)** · [Browser hosting guide](docs/BROWSER_HOSTING.md) · [Model details](models/MODEL_CARD.md) · [Browser model download](https://github.com/Kal123new/BusSafetyAI/releases/tag/browser-model-v1)
 
-The hosted app requires an account token. Hosting runs independently of the developer's laptop; availability depends on the hosting service. Camera detection and maps require connectivity to their services.
+## Browser version
+
+The desktop browser build runs the custom model locally using WebGPU or WebAssembly. Camera images stay on the visitor's computer. An isolated public sample includes fictional students and saves only in that browser. Shared trips, administration, replacement buses, and guardian records require account-token sign-in to the configured backend.
+
+The free-hosting configuration uses Vercel Hobby for a personal, non-commercial project and Neon Free for persistent records, within their usage limits. It does not require the developer's laptop to stay on. **Live dashboard: https://bus-safety-ai.vercel.app/** Open the link and choose “Open sample dashboard” to try the fictional sample, or sign in for shared records. The earlier Hugging Face deployment is paused and is not the browser version.
+
+The `Browser dashboard checks` workflow verifies the build, browser model execution, public sample rendering, small-screen guard, and trip workflow tests. It does not certify model accuracy or performance on every computer. See the [hosting guide](docs/BROWSER_HOSTING.md).
 
 ## Features
 
-- Browser camera input from the device opening the dashboard, with permission. Frames are processed by the backend model.
+- Browser camera input with permission. The new browser build processes frames locally; the original local Python mode processes them in its backend.
 - Live GPS position on the map, with optional OpenStreetMap tiles and OSRM road routing.
 - Expandable dashboard sections and wider camera/map panels.
 - Separate administrator, driver, and guardian access.
@@ -76,9 +82,9 @@ python -m backend.run_local --public-live-maps
 
 This enables public map/routing services: OpenStreetMap receives viewed map areas and OSRM receives routing coordinates. Allow location access in the browser. Camera access requires localhost or an HTTPS site and explicit browser permission.
 
-## Hugging Face deployment
+## Earlier Hugging Face deployment
 
-The included Dockerfile builds the frontend and starts the authenticated Space entry point on port 7860. Create a Docker Space and push this source to its repository. Configure these **Space Secrets**, never commit their values:
+The Dockerfile builds the original server-inference frontend and starts the authenticated Space entry point on port 7860. This is separate from the new browser/Vercel configuration and is not a free-hosting promise. Configure these **Space Secrets**, never commit their values:
 
 - `DATABASE_URL`: the Neon PostgreSQL connection string, including its required TLS settings.
 - `SAFESENSE_INITIAL_ADMIN_TOKEN`: a random 32–200 character owner token with no internal spaces. Used to bootstrap the initial owner account.
