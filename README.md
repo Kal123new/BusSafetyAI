@@ -1,5 +1,7 @@
 # SafeSense — BusSafetyAI
 
+> **Compatibility: computers / large screens only.** Use a desktop or laptop with a modern Chrome or Edge browser and a window at least 1024 CSS pixels wide. Phones and tablets are not supported. Browser-based detection is being implemented; its performance depends on the computer's hardware.
+
 A school-bus dashboard with camera-based person detection, live location, student attendance, trip management, and post-trip inspection workflows. The current application uses React, FastAPI, and a custom YOLO26s model.
 
 [Hosted dashboard](https://kal123new-bussafetyai.hf.space/) · [Hugging Face Space](https://huggingface.co/spaces/Kal123new/BusSafetyAI) · [Model details](models/MODEL_CARD.md)
