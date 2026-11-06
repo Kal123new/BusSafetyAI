@@ -1,0 +1,11 @@
+.git
+node_modules
+dist
+.venv*
+__pycache__
+.pytest_cache
+.env*
+*.db
+*.sqlite*
+Code
+yolov8n.pt
